@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -25,7 +26,7 @@ namespace Stardewponics
 	public override void Entry(IModHelper helper)
 	{
 		ControlEvents.KeyPressed += this.ReceiveKeyPress;
-		SaveEvents.AfterLoad += this.ReceiveAfterLoad;
+
 	}
 
 
@@ -37,18 +38,16 @@ namespace Stardewponics
 	/// <param name="e">The event data.</param>
 	private void ReceiveKeyPress(object sender, EventArgsKeyPressed e)
 	{
-		this.Monitor.Log($"Player pressed {e.KeyPressed}.");
+		if (e.KeyPressed == Keys.OemCloseBrackets)
+		{
+				this.Monitor.Log("Build Greenhouse key pressed.");
+                this.Farm.buildStructure(new Greenhouse().SetDaysOfConstructionLeft(0), new Vector2(5, 35), false, Game1.player);
+		}
 	}
 
-	/// <summmary>The event handler called after the player loads their save.</summary>
-	/// <param name="sender">The event sender.</param>
-	/// <param name="e">The event arguments.</param>
-	public void ReceiveAfterLoad(object sender, EventArgs e)
+	private void TimeEvents_AfterDayStarted(object sender, EventArgs eventArgs)
 	{
-		this.Monitor.Log("The player loaded their game! This is a good time to do things.");
-		this.Monitor.Log("Everything in the world is ready to interact with at this point.");
-
-        this.Farm.buildStructure(new Greenhouse().SetDaysOfConstructionLeft(0), new Vector2(5, 35), false, Game1.player);
+		this.Farm = Game1.getFarm();
 	}
 
 }
