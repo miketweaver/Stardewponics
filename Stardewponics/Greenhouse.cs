@@ -14,11 +14,11 @@ namespace Stardewponics
 		public Greenhouse() : base()
 		{
 			buildingType = "Fancy Greenhouse";
-			humanDoor = new Point(4,6);
-			animalDoor = new Point(-1, -1);
+			humanDoor = new Point(-1, -1);
+			animalDoor = new Point(-2, -1);
 			indoors = null;
 			nameOfIndoors = "";
-			baseNameOfIndoors = "FarmGreenHouse";
+			baseNameOfIndoors = "";
 			nameOfIndoorsWithoutUnique = "";
 			magical = false;
 			tileX = 0;
@@ -39,14 +39,13 @@ namespace Stardewponics
 
 		public override bool intersects(Rectangle boundingBox)
 		{
-			if (daysOfConstructionLeft > 0)
-				return base.intersects(boundingBox);
 			if (!base.intersects(boundingBox))
 				return false;
 			if (boundingBox.X >= (this.tileX + 4) * Game1.tileSize && boundingBox.Right < (this.tileX + 7) * Game1.tileSize)
 				return boundingBox.Y <= (this.tileY + 1) * Game1.tileSize;
 			return true;
 		}
+
 
 		public override void draw(SpriteBatch b)
 		{
@@ -57,7 +56,7 @@ namespace Stardewponics
 			else
 			{
 				this.drawShadow(b, -1, -1);
-				b.Draw(this.texture, Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(this.tileX * Game1.tileSize), (float)(this.tileY * Game1.tileSize + this.tilesHigh * Game1.tileSize))), new Rectangle?(this.texture.Bounds), this.color * this.alpha, 0.0f, new Vector2(0.0f, (float)this.texture.Bounds.Height), 4f, SpriteEffects.None, (float)((this.tileY + this.tilesHigh - 1) * Game1.tileSize) / 10000f);
+				b.Draw(this.texture, Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(this.tileX * Game1.tileSize), (float)(this.tileY * Game1.tileSize + this.tilesHigh * Game1.tileSize))), new Rectangle?(this.texture.Bounds), this.color * this.alpha, 0.0f, new Vector2(0.0f, (float)this.texture.Bounds.Height), 4f, SpriteEffects.None, (float)((this.tileY + this.tilesHigh - 2) * Game1.tileSize) / 10000f);
 			}
 		}
 

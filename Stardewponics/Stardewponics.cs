@@ -1,13 +1,18 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
+using xTile;
+using xTile.Dimensions;
+
 
 namespace Stardewponics
 {
@@ -30,25 +35,34 @@ namespace Stardewponics
 	}
 
 
-	/*********
-	** Private methods
-	*********/
-	/// <summary>The method invoked when the player presses a keyboard button.</summary>
-	/// <param name="sender">The event sender.</param>
-	/// <param name="e">The event data.</param>
-	private void ReceiveKeyPress(object sender, EventArgsKeyPressed e)
-	{
-		if (e.KeyPressed == Keys.OemCloseBrackets)
+		/*********
+		** Private methods
+		*********/
+		/// <summary>The method invoked when the player presses a keyboard button.</summary>
+		/// <param name="sender">The event sender.</param>
+		/// <param name="e">The event data.</param>
+		private void ReceiveKeyPress(object sender, EventArgsKeyPressed e)
 		{
+			if (e.KeyPressed == Keys.OemCloseBrackets)
+			{
 				this.Monitor.Log("Build Greenhouse key pressed.");
 				this.Farm.buildStructure(new Greenhouse().SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
+				GameLocation aquaponics = new GameLocation(Game1.content.Load<Map>("..\\Mods\\Stardewponics\\assets\\greenhousemap"), "Aquaponics");
+				aquaponics.IsOutdoors = false;
+				Game1.locations.Add(aquaponics);
+                Game1.locations[1].warps.Add(new Warp(29, 44, "Aquaponics", 10, 22, false));
+				Game1.locations[1].warps.Add(new Warp(30, 44, "Aquaponics", 10, 22, false));
+			}
+			if (e.KeyPressed == Keys.OemOpenBrackets)
+			{
+				Game1.warpFarmer("Farm", 24, 39, false);
+			}
 		}
-	}
 
-	private void TimeEvents_AfterDayStarted(object sender, EventArgs eventArgs)
-	{
-			this.Farm = Game1.getFarm();
-	}
+		private void TimeEvents_AfterDayStarted(object sender, EventArgs eventArgs)
+		{
+				this.Farm = Game1.getFarm();
+		}
 
 }
 }
