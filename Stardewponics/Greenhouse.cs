@@ -14,11 +14,11 @@ namespace Stardewponics
 		public Greenhouse() : base()
 		{
 			buildingType = "Fancy Greenhouse";
-			humanDoor = new Point(5,5);
-			animalDoor = new Point(-4, -1);
+			humanDoor = new Point(4,6);
+			animalDoor = new Point(-1, -1);
 			indoors = null;
 			nameOfIndoors = "";
-			baseNameOfIndoors = "";
+			baseNameOfIndoors = "FarmGreenHouse";
 			nameOfIndoorsWithoutUnique = "";
 			magical = false;
 			tileX = 0;
@@ -43,7 +43,7 @@ namespace Stardewponics
 				return base.intersects(boundingBox);
 			if (!base.intersects(boundingBox))
 				return false;
-			if (boundingBox.X >= (this.tileX + 1) * Game1.tileSize && boundingBox.Right < (this.tileX + 3) * Game1.tileSize)
+			if (boundingBox.X >= (this.tileX + 4) * Game1.tileSize && boundingBox.Right < (this.tileX + 7) * Game1.tileSize)
 				return boundingBox.Y <= (this.tileY + 1) * Game1.tileSize;
 			return true;
 		}
