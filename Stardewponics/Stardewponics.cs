@@ -50,7 +50,7 @@ namespace Stardewponics
 				GameLocation aquaponics = new GameLocation(Game1.content.Load<Map>("..\\Mods\\Stardewponics\\assets\\greenhousemap"), "Aquaponics");
 				aquaponics.IsOutdoors = false;
 				Game1.locations.Add(aquaponics);
-                Game1.locations[1].warps.Add(new Warp(29, 44, "Aquaponics", 10, 22, false));
+				Game1.locations[1].warps.Add(new Warp(29, 44, "Aquaponics", 10, 22, false));
 				Game1.locations[1].warps.Add(new Warp(30, 44, "Aquaponics", 10, 22, false));
 			}
 			if (e.KeyPressed == Keys.OemOpenBrackets)
