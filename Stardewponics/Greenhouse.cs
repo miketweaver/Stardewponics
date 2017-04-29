@@ -12,10 +12,10 @@ namespace Stardewponics
 		** Public methods
 		*********/
 		public Greenhouse() : base()
-		        {
+		{
 			buildingType = "Fancy Greenhouse";
-			humanDoor = new Point(-1, -1);
-			animalDoor = new Point(-2, -1);
+			humanDoor = new Point(5,5);
+			animalDoor = new Point(-4, -1);
 			indoors = null;
 			nameOfIndoors = "";
 			baseNameOfIndoors = "";
@@ -24,48 +24,11 @@ namespace Stardewponics
 			tileX = 0;
 			tileY = 0;
 			maxOccupants = 0;
-			tilesWide = 4;
-			tilesHigh = 2;
+			tilesWide = 15;
+			tilesHigh = 7;
 			texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
 			daysOfConstructionLeft = 1;
-		}
-
-		public Greenhouse(BluePrint input, Vector2 tileLocation) : base(input, tileLocation)
-		        {
-			buildingType = "Fancy Greenhouse";
-			humanDoor = new Point(-1, -1);
-			animalDoor = new Point(-2, -1);
-			indoors = null;
-			nameOfIndoors = "";
-			baseNameOfIndoors = "";
-			nameOfIndoorsWithoutUnique = "";
-			magical = true;
-			tileX = (int)tileLocation.X;
-			tileY = (int)tileLocation.Y;
-			maxOccupants = 0;
-			tilesWide = 4;
-			tilesHigh = 2;
-			texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
-			daysOfConstructionLeft = 0;
-		}
-
-		public Greenhouse(Vector2 tileLocation) : base()
-		        {
-			buildingType = "Fancy Greenhouse";
-			humanDoor = new Point(-1, -1);
-			animalDoor = new Point(-2, -1);
-			indoors = null;
-			nameOfIndoors = "";
-			baseNameOfIndoors = "";
-			nameOfIndoorsWithoutUnique = "";
-			magical = true;
-			tileX = (int)tileLocation.X;
-			tileY = (int)tileLocation.Y;
-			maxOccupants = 0;
-			tilesWide = 4;
-			tilesHigh = 2;
-			texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
-			daysOfConstructionLeft = 0;
+			leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
 		}
 
 		public Greenhouse SetDaysOfConstructionLeft(int input)

@@ -25,8 +25,8 @@ namespace Stardewponics
 	/// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
 	public override void Entry(IModHelper helper)
 	{
-		ControlEvents.KeyPressed += this.ReceiveKeyPress;
-
+			ControlEvents.KeyPressed += this.ReceiveKeyPress;
+			ControlEvents.KeyPressed += this.TimeEvents_AfterDayStarted;
 	}
 
 
@@ -41,13 +41,13 @@ namespace Stardewponics
 		if (e.KeyPressed == Keys.OemCloseBrackets)
 		{
 				this.Monitor.Log("Build Greenhouse key pressed.");
-                this.Farm.buildStructure(new Greenhouse().SetDaysOfConstructionLeft(0), new Vector2(5, 35), false, Game1.player);
+				this.Farm.buildStructure(new Greenhouse().SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
 		}
 	}
 
 	private void TimeEvents_AfterDayStarted(object sender, EventArgs eventArgs)
 	{
-		this.Farm = Game1.getFarm();
+			this.Farm = Game1.getFarm();
 	}
 
 }
