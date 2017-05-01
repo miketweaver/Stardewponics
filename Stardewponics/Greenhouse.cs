@@ -11,7 +11,7 @@ namespace Stardewponics
 		/*********
 		** Public methods
 		*********/
-		public Greenhouse() : base()
+		public Greenhouse(Texture2D texture) : base()
 		{
 			buildingType = "Fancy Greenhouse";
 			humanDoor = new Point(-1, -1);
@@ -26,7 +26,8 @@ namespace Stardewponics
 			maxOccupants = 0;
 			tilesWide = 15;
 			tilesHigh = 7;
-			texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
+			this.texture = texture;
+			//texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
 			daysOfConstructionLeft = 1;
 			leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
 		}

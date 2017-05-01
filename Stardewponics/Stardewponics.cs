@@ -32,6 +32,7 @@ namespace Stardewponics
 	{
 			ControlEvents.KeyPressed += this.ReceiveKeyPress;
 			ControlEvents.KeyPressed += this.TimeEvents_AfterDayStarted;
+			//var texture = helper.Content.Load<Texture2D>(@"assets\texture.xnb", ContentSource.ModFolder);
 	}
 
 
@@ -46,9 +47,11 @@ namespace Stardewponics
 			if (e.KeyPressed == Keys.OemCloseBrackets)
 			{
 				this.Monitor.Log("Build Greenhouse key pressed.");
-				this.Farm.buildStructure(new Greenhouse().SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
+                this.Farm.buildStructure(new Greenhouse(this.Helper.Content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder)).SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
+
 				GameLocation aquaponics = new GameLocation(Game1.content.Load<Map>("..\\Mods\\Stardewponics\\assets\\greenhousemap"), "Aquaponics");
 				aquaponics.IsOutdoors = false;
+				aquaponics.isFarm = true;
 				Game1.locations.Add(aquaponics);
 				Game1.locations[1].warps.Add(new Warp(29, 44, "Aquaponics", 10, 22, false));
 				Game1.locations[1].warps.Add(new Warp(30, 44, "Aquaponics", 10, 22, false));
