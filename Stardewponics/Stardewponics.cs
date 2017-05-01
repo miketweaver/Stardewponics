@@ -47,9 +47,10 @@ namespace Stardewponics
 			if (e.KeyPressed == Keys.OemCloseBrackets)
 			{
 				this.Monitor.Log("Build Greenhouse key pressed.");
-                this.Farm.buildStructure(new Greenhouse(this.Helper.Content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder)).SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
+				this.Farm.buildStructure(new Greenhouse(this.Helper.Content).SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
 
-				GameLocation aquaponics = new GameLocation(Game1.content.Load<Map>("..\\Mods\\Stardewponics\\assets\\greenhousemap"), "Aquaponics");
+
+				GameLocation aquaponics = new GameLocation(this.Helper.Content.Load<Map>(@"assets\greenhousemap.xnb", ContentSource.ModFolder), "Aquaponics");
 				aquaponics.IsOutdoors = false;
 				aquaponics.isFarm = true;
 				Game1.locations.Add(aquaponics);

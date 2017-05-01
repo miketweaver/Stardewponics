@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewModdingAPI;
 using StardewValley.Buildings;
 
 namespace Stardewponics
@@ -11,7 +12,7 @@ namespace Stardewponics
 		/*********
 		** Public methods
 		*********/
-		public Greenhouse(Texture2D texture) : base()
+		public Greenhouse(IContentHelper content) : base()
 		{
 			buildingType = "Fancy Greenhouse";
 			humanDoor = new Point(-1, -1);
@@ -26,7 +27,7 @@ namespace Stardewponics
 			maxOccupants = 0;
 			tilesWide = 15;
 			tilesHigh = 7;
-			this.texture = texture;
+            this.texture = content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
 			//texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
 			daysOfConstructionLeft = 1;
 			leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
