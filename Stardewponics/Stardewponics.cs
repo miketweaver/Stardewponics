@@ -100,7 +100,36 @@ namespace Stardewponics
 				List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
 
 
-				blueprints.Add(new BluePrint("Aquaponics: \"388 500 390 200 337 1/14/7/-1/-1/-2/-1/Greenhouse/Aquaponics/A place to grow plants using fertilized water from your Fish!/Buildings/none/225/204/-1/null/Farm/100/false\" #!String\n"));
+				BluePrint AquaBP = new BluePrint("Garage");
+				AquaBP.itemsRequired.Clear();
+
+				string[] strArray2 = "388 500 390 200 337 1".Split(' ');
+				int index = 0;
+					while (index<strArray2.Length)
+					{
+						if (!strArray2[index].Equals(""))
+							AquaBP.itemsRequired.Add(Convert.ToInt32(strArray2[index]), Convert.ToInt32(strArray2 [index + 1]));
+					index += 2;     
+					}
+                AquaBP.texture = this.Helper.Content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
+				AquaBP.humanDoor = new Point(-1, -1);
+				AquaBP.animalDoor = new Point(-2, -1);
+				AquaBP.mapToWarpTo = "null";
+				AquaBP.displayName = "Aquaponics";
+                AquaBP.description = "A place to grow plants using fertilized water from your Fish!";
+                AquaBP.blueprintType = "Buildings";
+                AquaBP.nameOfBuildingToUpgrade = "";
+                AquaBP.actionBehavior = "null";
+                AquaBP.maxOccupants = -1;
+				AquaBP.moneyRequired = 100; //ModConfig.TractorHousePrice;
+                AquaBP.tilesWidth = 14;
+                AquaBP.tilesHeight = 7;
+                AquaBP.sourceRectForMenuView = new Microsoft.Xna.Framework.Rectangle(0, 0, 96, 96);
+				AquaBP.namesOfOkayBuildingLocations.Clear();
+                AquaBP.namesOfOkayBuildingLocations.Add("Farm");
+                AquaBP.magical = true;
+
+				blueprints.Add(AquaBP);
 				//this.Monitor.Log(blueprints);
 			}
 		}
