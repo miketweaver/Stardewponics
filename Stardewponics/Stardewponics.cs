@@ -13,6 +13,7 @@ using StardewValley.Tools;
 using xTile;
 using xTile.Dimensions;
 using xTile.Tiles;
+using System.Collections.Generic;
 
 namespace Stardewponics
 {
@@ -49,7 +50,7 @@ namespace Stardewponics
 				int start = 30;
 				int farmX = 25;
 				int farmY = 40;
-				this.Monitor.Log("Build Greenhouse key pressed.");
+				this.Monitor.Log("Build Greenhouse key pressed. ]");
 				this.Farm.buildStructure(new Greenhouse(this.Helper.Content).SetDaysOfConstructionLeft(0), new Vector2(farmX, farmY), false, Game1.player);
 
 
@@ -86,6 +87,7 @@ namespace Stardewponics
 			}
 			if (e.KeyPressed == Keys.OemOpenBrackets)
 			{
+                this.Monitor.Log("Warp key pressed. [");
 				//Game1.warpFarmer("Greenhouse", 15, 22, false);
 				Game1.warpFarmer("Farm", 29, 47, false);
 			}
@@ -93,7 +95,13 @@ namespace Stardewponics
 			if (e.KeyPressed == Keys.L)
 			{
 
+				//this.Helper.Reflection.GetPrivateValue<BluePrint>
+                this.Monitor.Log("L key pressed.");
+				List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
 
+
+				blueprints.Add(new BluePrint("Aquaponics: \"388 500 390 200 337 1/14/7/-1/-1/-2/-1/Greenhouse/Aquaponics/A place to grow plants using fertilized water from your Fish!/Buildings/none/225/204/-1/null/Farm/100/false\" #!String\n"));
+				//this.Monitor.Log(blueprints);
 			}
 		}
 
