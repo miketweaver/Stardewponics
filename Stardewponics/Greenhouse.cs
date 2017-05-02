@@ -25,9 +25,9 @@ namespace Stardewponics
 			tileX = 0;
 			tileY = 0;
 			maxOccupants = 0;
-			tilesWide = 15;
+			tilesWide = 14;
 			tilesHigh = 7;
-			this.texture = content.Load<Texture2D>(@"assets\greenhouse.png", ContentSource.ModFolder);
+			this.texture = content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
 			daysOfConstructionLeft = 1;
 			leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
 		}
@@ -74,7 +74,7 @@ namespace Stardewponics
 
 		public override Rectangle getSourceRectForMenu()
 		{
-			return new Rectangle(0, 0, this.texture.Bounds.Width, this.texture.Bounds.Height);   
+			return new Rectangle(0, 0, this.texture.Bounds.Width-1, this.texture.Bounds.Height);   
 		}
 	}
 }
