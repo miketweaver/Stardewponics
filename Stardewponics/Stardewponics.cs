@@ -75,16 +75,10 @@ namespace Stardewponics
 					{
 						for (int y = 0; y<aqualayer.LayerSize.Height; y++)
 						{
-							try
-							{
-								layer.Tiles[start + x, start + y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, aqualayer.Tiles[x, y].TileIndex);
-							}
-							// It will fail if .TileIndex returns null, so we need to handle that.
-							catch (Exception ex)
-							{
-							}
+							var aquaTile = aqualayer.Tiles[x, y];
+							if (aquaTile != null)
+								layer.Tiles[start + x, start + y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, aquaTile.TileIndex);
 						}
-
 					}
 				}
 

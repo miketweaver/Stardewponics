@@ -60,4 +60,15 @@
     </ItemGroup>
     <Copy SourceFiles="@(ModFiles)" DestinationFolder="$(GamePath)\Mods\$(TargetName)\%(RecursiveDir)" SkipUnchangedFiles="false" />
   </Target>
+
+  <!-- launch SMAPI on debug -->
+  <PropertyGroup Condition="$(Configuration) == 'Debug'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(GamePath)\StardewModdingAPI.bin.osx</StartProgram>
+    <StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
+  </PropertyGroup>
+  
+  <!-- Somehow this makes Visual Studio for Mac recognise the previous section. -->
+  <!-- Nobody knows why. -->
+  <PropertyGroup Condition="'$(RunConfiguration)' == 'Default'" />
 </Project>
