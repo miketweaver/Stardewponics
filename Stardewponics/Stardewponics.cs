@@ -12,7 +12,7 @@ using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using xTile;
 using xTile.Dimensions;
-
+using xTile.Tiles;
 
 namespace Stardewponics
 {
@@ -45,20 +45,61 @@ namespace Stardewponics
 		{
 			if (e.KeyPressed == Keys.OemCloseBrackets)
 			{
+
+				int start = 30;
+				int farmX = 25;
+				int farmY = 40;
 				this.Monitor.Log("Build Greenhouse key pressed.");
-				this.Farm.buildStructure(new Greenhouse(this.Helper.Content).SetDaysOfConstructionLeft(0), new Vector2(25, 40), false, Game1.player);
+				this.Farm.buildStructure(new Greenhouse(this.Helper.Content).SetDaysOfConstructionLeft(0), new Vector2(farmX, farmY), false, Game1.player);
 
 
-				GameLocation aquaponics = new GameLocation(this.Helper.Content.Load<Map>(@"assets\greenhousemap.xnb", ContentSource.ModFolder), "Aquaponics");
-				aquaponics.IsOutdoors = false;
-				aquaponics.isFarm = true;
-				Game1.locations.Add(aquaponics);
-				Game1.locations[1].warps.Add(new Warp(29, 44, "Aquaponics", 10, 22, false));
-				Game1.locations[1].warps.Add(new Warp(30, 44, "Aquaponics", 10, 22, false));
+
+				GameLocation farmLocation = Game1.getLocationFromName("Farm");
+
+				farmLocation.warps.Add(new Warp(farmX + 4, farmY + 4, "Greenhouse", start + 10, start + 23, false));
+				farmLocation.warps.Add(new Warp(farmX + 5, farmY + 4, "Greenhouse", start + 10, start + 23, false));
+
+				GameLocation greenhouseLocation = Game1.getLocationFromName("Greenhouse");
+				var tilesheet = greenhouseLocation.map.GetTileSheet("untitled tile sheet");
+
+
+				var aquaponics = this.Helper.Content.Load<Map>(@"assets\greenhousemap.xnb", ContentSource.ModFolder);
+				var layers = new[] { "Back", "Buildings", "Front" };
+				foreach (string lay in layers)
+				{
+				var aqualayer = aquaponics.GetLayer(lay);
+				var layer = greenhouseLocation.map.GetLayer(lay);
+				layer.LayerSize = new xTile.Dimensions.Size(230, 230);
+
+					for (int x = 0; x<aqualayer.LayerSize.Width; x++)
+					{
+						for (int y = 0; y<aqualayer.LayerSize.Height; y++)
+						{
+							try
+							{
+								layer.Tiles[start + x, start + y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, aqualayer.Tiles[x, y].TileIndex);
+							}
+							// It will fail if .TileIndex returns null, so we need to handle that.
+							catch (Exception ex)
+							{
+							}
+						}
+
+					}
+				}
+
+				greenhouseLocation.warps.Add(new Warp(start + 10, start + 24, "Farm", farmX + 4, farmY + 7, false));
 			}
 			if (e.KeyPressed == Keys.OemOpenBrackets)
 			{
-				Game1.warpFarmer("Farm", 24, 39, false);
+				//Game1.warpFarmer("Greenhouse", 15, 22, false);
+				Game1.warpFarmer("Farm", 29, 47, false);
+			}
+
+			if (e.KeyPressed == Keys.L)
+			{
+
+
 			}
 		}
 
