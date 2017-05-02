@@ -32,7 +32,6 @@ namespace Stardewponics
 	{
 			ControlEvents.KeyPressed += this.ReceiveKeyPress;
 			ControlEvents.KeyPressed += this.TimeEvents_AfterDayStarted;
-			//var texture = helper.Content.Load<Texture2D>(@"assets\texture.xnb", ContentSource.ModFolder);
 	}
 
 

@@ -27,8 +27,7 @@ namespace Stardewponics
 			maxOccupants = 0;
 			tilesWide = 15;
 			tilesHigh = 7;
-            this.texture = content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
-			//texture = Game1.content.Load<Texture2D>("..\\Mods\\Stardewponics\\assets\\greenhouse");
+			this.texture = content.Load<Texture2D>(@"assets\greenhouse.png", ContentSource.ModFolder);
 			daysOfConstructionLeft = 1;
 			leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
 		}
