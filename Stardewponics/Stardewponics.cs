@@ -33,6 +33,7 @@ namespace Stardewponics
 	{
 			ControlEvents.KeyPressed += this.ReceiveKeyPress;
 			ControlEvents.KeyPressed += this.TimeEvents_AfterDayStarted;
+			MenuEvents.MenuChanged += this.MenuAddInBuilding;
 	}
 
 
@@ -89,7 +90,8 @@ namespace Stardewponics
 			{
                 this.Monitor.Log("Warp key pressed. [");
 				//Game1.warpFarmer("Greenhouse", 15, 22, false);
-				Game1.warpFarmer("Farm", 29, 47, false);
+				//Game1.warpFarmer("Farm", 29, 47, false);
+				Game1.warpFarmer("Mountain", 12, 27, false);
 			}
 
 			if (e.KeyPressed == Keys.L)
@@ -97,39 +99,8 @@ namespace Stardewponics
 
 				//this.Helper.Reflection.GetPrivateValue<BluePrint>
                 this.Monitor.Log("L key pressed.");
-				List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
-
-
-				BluePrint AquaBP = new BluePrint("Garage");
-				AquaBP.itemsRequired.Clear();
-
-				string[] strArray2 = "388 500 390 200 337 1".Split(' ');
-				int index = 0;
-					while (index<strArray2.Length)
-					{
-						if (!strArray2[index].Equals(""))
-							AquaBP.itemsRequired.Add(Convert.ToInt32(strArray2[index]), Convert.ToInt32(strArray2 [index + 1]));
-					index += 2;     
-					}
-                AquaBP.texture = this.Helper.Content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
-				AquaBP.humanDoor = new Point(-1, -1);
-				AquaBP.animalDoor = new Point(-2, -1);
-				AquaBP.mapToWarpTo = "null";
-				AquaBP.displayName = "Aquaponics";
-                AquaBP.description = "A place to grow plants using fertilized water from your Fish!";
-                AquaBP.blueprintType = "Buildings";
-                AquaBP.nameOfBuildingToUpgrade = "";
-                AquaBP.actionBehavior = "null";
-                AquaBP.maxOccupants = -1;
-				AquaBP.moneyRequired = 100; //ModConfig.TractorHousePrice;
-                AquaBP.tilesWidth = 14;
-                AquaBP.tilesHeight = 7;
-                AquaBP.sourceRectForMenuView = new Microsoft.Xna.Framework.Rectangle(0, 0, 96, 96);
-				AquaBP.namesOfOkayBuildingLocations.Clear();
-                AquaBP.namesOfOkayBuildingLocations.Add("Farm");
-                AquaBP.magical = true;
-
-				blueprints.Add(AquaBP);
+				Building currentBuilt = this.Helper.Reflection.GetPrivateValue<Building>(Game1.activeClickableMenu, "currentBuilding");
+				this.Monitor.Log(currentBuilt.buildingType.ToString());
 				//this.Monitor.Log(blueprints);
 			}
 		}
@@ -139,5 +110,62 @@ namespace Stardewponics
 				this.Farm = Game1.getFarm();
 		}
 
+		private void MenuAddInBuilding(object sender, EventArgsClickableMenuChanged e)
+		{
+
+			if (e.NewMenu is CarpenterMenu)
+			{
+
+
+				List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
+
+				//Building currentBuilt = this.Helper.Reflection.GetPrivateValue<Building>(Game1.activeClickableMenu, "currentBuilding");
+				//currentBuilt = 
+				foreach (BluePrint print in blueprints)
+				{
+					this.Monitor.Log(print.name);
+					//this.Monitor.Log(print.texture.Width.ToString());
+					this.Monitor.Log(print.sourceRectForMenuView.Width.ToString());
+                    this.Monitor.Log(print.sourceRectForMenuView.Height.ToString());
+				}
+
+				BluePrint AquaBP = new BluePrint("Aquaponics");
+				AquaBP.itemsRequired.Clear();
+
+				string[] strArray2 = "390 200".Split(' ');
+				int index = 0;
+				while (index < strArray2.Length)
+				{
+					if (!strArray2[index].Equals(""))
+						AquaBP.itemsRequired.Add(Convert.ToInt32(strArray2[index]), Convert.ToInt32(strArray2[index + 1]));
+					index += 2;
+				}
+				AquaBP.texture = this.Helper.Content.Load<Texture2D>(@"Buildings\Shed.xnb", ContentSource.GameContent);
+				AquaBP.humanDoor = new Point(-1, -1);
+				AquaBP.animalDoor = new Point(-2, -1);
+				AquaBP.mapToWarpTo = "null";
+				AquaBP.displayName = "Aquaponics";
+				AquaBP.description = "A place to grow plants using fertilized water from your Fish!";
+				AquaBP.blueprintType = "Buildings";
+				AquaBP.nameOfBuildingToUpgrade = "";
+				AquaBP.actionBehavior = "null";
+				AquaBP.maxOccupants = -1;
+				AquaBP.moneyRequired = 100; //ModConfig.TractorHousePrice;
+				AquaBP.tilesWidth = 14;
+				AquaBP.tilesHeight = 7;
+				AquaBP.getTileSheetIndexForStructurePlacementTile(0, 0);
+				AquaBP.sourceRectForMenuView = new Microsoft.Xna.Framework.Rectangle(0, 0, 96, 96);
+				AquaBP.namesOfOkayBuildingLocations.Clear();
+				AquaBP.namesOfOkayBuildingLocations.Add("Farm");
+				AquaBP.magical = false;
+
+				blueprints.Add(AquaBP);
+			}
+			else
+			{
+				this.Monitor.Log(e.NewMenu.ToString());
+			}
+
+		}
 }
 }
