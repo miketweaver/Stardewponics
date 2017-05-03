@@ -17,24 +17,33 @@ using System.Collections.Generic;
 
 namespace Stardewponics
 {
-    /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod
-{
-	/*********
-	** Properties
-	*********/
-	private Farm Farm = null;
-	/*********
-	** Public methods
-	*********/
-	/// <summary>Initialise the mod.</summary>
-	/// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
-	public override void Entry(IModHelper helper)
+	/// <summary>The mod entry point.</summary>
+	public class ModEntry : Mod
 	{
+		/*********
+		** Properties
+		*********/
+		private Farm Farm = null;
+		private bool IsNewDay;
+		private SaveCollection AllSaves;
+
+		/*********
+		** Public methods
+		*********/
+		/// <summary>Initialise the mod.</summary>
+		/// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
+		public override void Entry(IModHelper helper)
+		{
 			ControlEvents.KeyPressed += this.ReceiveKeyPress;
 			ControlEvents.KeyPressed += this.TimeEvents_AfterDayStarted;
 			MenuEvents.MenuChanged += this.MenuAddInBuilding;
-	}
+
+			// spawn tractor & remove it before save
+			TimeEvents.AfterDayStarted += this.TimeEvents_AfterDayStarted;
+			LocationEvents.CurrentLocationChanged += this.LocationEvents_CurrentLocationChanged;
+			SaveEvents.BeforeSave += this.SaveEvents_BeforeSave;
+
+		}
 
 
 		/*********
@@ -43,6 +52,81 @@ namespace Stardewponics
 		/// <summary>The method invoked when the player presses a keyboard button.</summary>
 		/// <param name="sender">The event sender.</param>
 		/// <param name="e">The event data.</param>
+
+		private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+		{
+			// spawn tractor house & tractor
+			if (this.IsNewDay && e.NewLocation == this.Farm)
+			{
+				this.LoadModInfo();
+				this.IsNewDay = false;
+			}
+		}
+
+		private void SaveEvents_BeforeSave(object sender, EventArgs eventArgs)
+		{
+			// save mod data
+			this.SaveModInfo();
+
+			// remove tractor from save
+			foreach (Building aquabuilding in this.Farm.buildings.ToArray())
+				if (aquabuilding.buildingType == "Aquaponics")
+					this.Farm.destroyStructure(aquabuilding);
+
+			//Not needed as we'll be anly placing in the Farm?
+			//foreach (GameLocation location in Game1.locations)
+				
+			//	this.RemoveEveryCharactersOfType<Tractor>(location);
+		}
+
+
+		//use to write AllSaves info to some .json file to store save
+		private void SaveModInfo()
+		{
+			if (AllSaves == null)
+				AllSaves = new SaveCollection().Add(new Save(Game1.player.name, Game1.uniqueIDForThisGame));
+
+			Save currentSave = AllSaves.FindSave(Game1.player.name, Game1.uniqueIDForThisGame);
+
+			if (currentSave.SaveSeed != ulong.MaxValue)
+			{
+				currentSave.GreenHouse.Clear();
+				foreach (Building b in this.Farm.buildings)
+				{
+					if (b is Building && b.buildingType == "Aquaponics")
+						currentSave.AddTractorHouse(b.tileX, b.tileY);
+				}
+			}
+			else
+			{
+				AllSaves.saves.Add(new Save(Game1.player.name, Game1.uniqueIDForThisGame));
+				SaveModInfo();
+				return;
+			}
+			this.Helper.WriteJsonFile("AquaponicsSave.json", AllSaves);
+		}
+
+		//use to load save info from some .json file to AllSaves
+		private void LoadModInfo()
+		{
+			this.AllSaves = this.Helper.ReadJsonFile<SaveCollection>("AquaponicsSave.json") ?? new SaveCollection();
+			Save saveInfo = this.AllSaves.FindSave(Game1.player.name, Game1.uniqueIDForThisGame);
+			if (saveInfo != null && saveInfo.SaveSeed != ulong.MaxValue)
+			{
+				foreach (Vector2 THS in saveInfo.GreenHouse)
+				{
+					Building loadGreen = new Building(CreateGreenhouse(), THS);
+					loadGreen.daysOfConstructionLeft = 0;
+					this.Farm.buildStructure(loadGreen, THS, false, Game1.player);
+
+					//if (IsNewTractor)
+					//	SpawnTractor();
+				}
+			} 
+		}
+
+
+
 		private void ReceiveKeyPress(object sender, EventArgsKeyPressed e)
 		{
 			if (e.KeyPressed == Keys.OemCloseBrackets)
@@ -96,12 +180,10 @@ namespace Stardewponics
 
 			if (e.KeyPressed == Keys.L)
 			{
-
-				//this.Helper.Reflection.GetPrivateValue<BluePrint>
                 this.Monitor.Log("L key pressed.");
 				Building currentBuilt = this.Helper.Reflection.GetPrivateValue<Building>(Game1.activeClickableMenu, "currentBuilding");
 				this.Monitor.Log(currentBuilt.buildingType.ToString());
-				//this.Monitor.Log(blueprints);
+				this.Monitor.Log(currentBuilt.GetType().FullName);
 			}
 		}
 
@@ -129,18 +211,32 @@ namespace Stardewponics
                     this.Monitor.Log(print.sourceRectForMenuView.Height.ToString());
 				}
 
+
+
+				blueprints.Add(CreateGreenhouse());
+			}
+			else
+			{
+				this.Monitor.Log(e.NewMenu.ToString());
+			}
+
+		}
+
+		private BluePrint CreateGreenhouse()
+		{
+
 				BluePrint AquaBP = new BluePrint("Aquaponics");
 				AquaBP.itemsRequired.Clear();
 
 				string[] strArray2 = "390 200".Split(' ');
 				int index = 0;
-				while (index < strArray2.Length)
+				while (index<strArray2.Length)
 				{
 					if (!strArray2[index].Equals(""))
 						AquaBP.itemsRequired.Add(Convert.ToInt32(strArray2[index]), Convert.ToInt32(strArray2[index + 1]));
 					index += 2;
 				}
-				AquaBP.texture = this.Helper.Content.Load<Texture2D>(@"Buildings\Shed.xnb", ContentSource.GameContent);
+				AquaBP.texture = this.Helper.Content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
 				AquaBP.humanDoor = new Point(-1, -1);
 				AquaBP.animalDoor = new Point(-2, -1);
 				AquaBP.mapToWarpTo = "null";
@@ -158,14 +254,7 @@ namespace Stardewponics
 				AquaBP.namesOfOkayBuildingLocations.Clear();
 				AquaBP.namesOfOkayBuildingLocations.Add("Farm");
 				AquaBP.magical = false;
-
-				blueprints.Add(AquaBP);
-			}
-			else
-			{
-				this.Monitor.Log(e.NewMenu.ToString());
-			}
-
+			return AquaBP;
 		}
 }
 }

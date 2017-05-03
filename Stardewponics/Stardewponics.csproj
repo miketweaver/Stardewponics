@@ -33,6 +33,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stardewponics.cs" />
     <Compile Include="Greenhouse.cs" />
+    <Compile Include="SaveCollection.cs" />
+    <Compile Include="Save.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
