@@ -118,9 +118,6 @@ namespace Stardewponics
 					Building loadGreen = new Building(CreateGreenhouse(), THS);
 					loadGreen.daysOfConstructionLeft = 0;
 					this.Farm.buildStructure(loadGreen, THS, false, Game1.player);
-
-					//if (IsNewTractor)
-					//	SpawnTractor();
 				}
 			} 
 		}
