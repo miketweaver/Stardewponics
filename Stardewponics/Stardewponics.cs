@@ -145,6 +145,8 @@ namespace Stardewponics
 				farmLocation.warps.Add(new Warp(farmX + 4, farmY + 4, "Greenhouse", start + 10, start + 23, false));
 				farmLocation.warps.Add(new Warp(farmX + 5, farmY + 4, "Greenhouse", start + 10, start + 23, false));
 
+				Game1.locations[1].Name
+
 				GameLocation greenhouseLocation = Game1.getLocationFromName("Greenhouse");
 				var tilesheet = greenhouseLocation.map.GetTileSheet("untitled tile sheet");
 
