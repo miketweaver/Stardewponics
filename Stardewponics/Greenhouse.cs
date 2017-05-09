@@ -61,6 +61,13 @@ namespace Stardewponics
 			}
 		}
 
+        public override void drawInMenu(SpriteBatch b, int x, int y)
+		{
+			int num1 = x / 2;// Game1.tileSize + 11 * Game1.pixelZoom;
+			int num2 = -y / 2 + Game1.tileSize / 2 - Game1.pixelZoom;
+			b.Draw(this.texture, new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + num1, Game1.activeClickableMenu.yPositionOnScreen + num2, (int)(texture.Width * 2.0f), (int)(texture.Height * 2.0f)), Color.White);
+		}
+
 		public override void dayUpdate(int dayOfMonth)
 		{
 			base.dayUpdate(dayOfMonth);
