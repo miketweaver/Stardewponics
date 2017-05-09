@@ -191,12 +191,30 @@ namespace Stardewponics
 				this.Farm = Game1.getFarm();
 		}
 
+        private void MenuForceOurBuildingRendering(object sender, EventArgs eventArgs)
+        {
+            var carpenter = Game1.activeClickableMenu as CarpenterMenu;
+            if ( carpenter == null )
+            {
+                GameEvents.UpdateTick -= MenuForceOurBuildingRendering;
+                return;
+            }
+
+            var currBuildingField = Helper.Reflection.GetPrivateField< Building >(carpenter, "currentBuilding");
+            var currBuilding = currBuildingField.GetValue();
+            if ( currBuilding is Building && currBuilding.buildingType == "Aquaponics" )
+            {
+                currBuildingField.SetValue(new Greenhouse(Helper.Content));
+            }
+        }
+
 		private void MenuAddInBuilding(object sender, EventArgsClickableMenuChanged e)
 		{
 
 			if (e.NewMenu is CarpenterMenu)
 			{
 
+				GameEvents.UpdateTick += MenuForceOurBuildingRendering;
 
 				List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
 
