@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewModdingAPI;
 using StardewValley.Buildings;
+using StardewValley.Menus;
 
 namespace Stardewponics
 {
@@ -63,9 +64,12 @@ namespace Stardewponics
 
         public override void drawInMenu(SpriteBatch b, int x, int y)
 		{
-			int num1 = x / 2;// Game1.tileSize + 11 * Game1.pixelZoom;
-			int num2 = -y / 2 + Game1.tileSize / 2 - Game1.pixelZoom;
-			b.Draw(this.texture, new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + num1, Game1.activeClickableMenu.yPositionOnScreen + num2, (int)(texture.Width * 2.0f), (int)(texture.Height * 2.0f)), Color.White);
+            CarpenterMenu menu = Game1.activeClickableMenu as CarpenterMenu;
+            float texScale = 2;
+            int num1 = (menu.maxWidthOfBuildingViewer - (int)(texture.Width * texScale)) / 2;
+            num1 -= texture.Width / 4;
+            int num2 = (menu.maxHeightOfBuildingViewer - (int)(texture.Height * texScale)) / 2;
+			b.Draw(this.texture, new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + num1, Game1.activeClickableMenu.yPositionOnScreen + num2, (int)(texture.Width * texScale), (int)(texture.Height * texScale)), Color.White);
 		}
 
 		public override void dayUpdate(int dayOfMonth)
