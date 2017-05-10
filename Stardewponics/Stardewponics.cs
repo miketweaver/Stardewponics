@@ -14,6 +14,8 @@ using xTile;
 using xTile.Dimensions;
 using xTile.Tiles;
 using System.Collections.Generic;
+using StardewValley.Locations;
+using System.Linq;
 
 namespace Stardewponics
 {
@@ -35,7 +37,6 @@ namespace Stardewponics
 		public override void Entry(IModHelper helper)
 		{
 			ControlEvents.KeyPressed += this.ReceiveKeyPress;
-			ControlEvents.KeyPressed += this.TimeEvents_AfterDayStarted;
 			MenuEvents.MenuChanged += this.MenuAddInBuilding;
 
 			// spawn tractor & remove it before save
@@ -55,9 +56,11 @@ namespace Stardewponics
 
 		private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
 		{
+            Monitor.Log("Loc changed. ");
 			// spawn tractor house & tractor
 			if (this.IsNewDay && e.NewLocation == this.Farm)
 			{
+                Monitor.Log("Pre load mod");
 				this.LoadModInfo();
 				this.IsNewDay = false;
 			}
@@ -83,19 +86,34 @@ namespace Stardewponics
 		//use to write AllSaves info to some .json file to store save
 		private void SaveModInfo()
 		{
+            Monitor.Log("SaveModInfo Start");
+
+
+
+
+
+
+
+
+
+
+
+
 			if (AllSaves == null)
 				AllSaves = new SaveCollection().Add(new Save(Game1.player.name, Game1.uniqueIDForThisGame));
-
+            
 			Save currentSave = AllSaves.FindSave(Game1.player.name, Game1.uniqueIDForThisGame);
+
+            Monitor.Log("currentSave: " + currentSave.ToString());
 
 			if (currentSave.SaveSeed != ulong.MaxValue)
 			{
-				currentSave.GreenHouse.Clear();
-				foreach (Building b in this.Farm.buildings)
-				{
-					if (b is Building && b.buildingType == "Aquaponics")
-						currentSave.AddTractorHouse(b.tileX, b.tileY);
-				}
+                currentSave.GreenHouse.Clear();
+                foreach (Building building in this.GetGreenhouses(this.Farm))
+                {
+                    currentSave.AddCustomBuilding(building.tileX, building.tileY);
+                    Monitor.Log("X: " + building.tileX + " Y: " + building.tileY);
+                }
 			}
 			else
 			{
@@ -103,18 +121,36 @@ namespace Stardewponics
 				SaveModInfo();
 				return;
 			}
+            Monitor.Log("All Saves: " + AllSaves);
 			this.Helper.WriteJsonFile("AquaponicsSave.json", AllSaves);
+
+
+
+
+
+
+
+Monitor.Log("SaveModInfo End");
+
+
+
+
+
 		}
+
 
 		//use to load save info from some .json file to AllSaves
 		private void LoadModInfo()
 		{
+            Monitor.Log("load mod info");
 			this.AllSaves = this.Helper.ReadJsonFile<SaveCollection>("AquaponicsSave.json") ?? new SaveCollection();
 			Save saveInfo = this.AllSaves.FindSave(Game1.player.name, Game1.uniqueIDForThisGame);
 			if (saveInfo != null && saveInfo.SaveSeed != ulong.MaxValue)
 			{
+                Monitor.Log("lmi 2");
 				foreach (Vector2 THS in saveInfo.GreenHouse)
 				{
+                    Monitor.Log("Greenhous - THS: " + THS.X + " " + THS.Y);
 					Building loadGreen = new Building(CreateGreenhouse(), THS);
 					loadGreen.daysOfConstructionLeft = 0;
 					this.Farm.buildStructure(loadGreen, THS, false, Game1.player);
@@ -188,6 +224,8 @@ namespace Stardewponics
 
 		private void TimeEvents_AfterDayStarted(object sender, EventArgs eventArgs)
 		{
+                Monitor.Log("After Day started");
+			    this.IsNewDay = true;
 				this.Farm = Game1.getFarm();
 		}
 
@@ -213,35 +251,17 @@ namespace Stardewponics
 
 			if (e.NewMenu is CarpenterMenu)
 			{
-
 				GameEvents.UpdateTick += MenuForceOurBuildingRendering;
 
 				List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
-
-				//Building currentBuilt = this.Helper.Reflection.GetPrivateValue<Building>(Game1.activeClickableMenu, "currentBuilding");
-				//currentBuilt = 
-				foreach (BluePrint print in blueprints)
-				{
-					this.Monitor.Log(print.name);
-					//this.Monitor.Log(print.texture.Width.ToString());
-					this.Monitor.Log(print.sourceRectForMenuView.Width.ToString());
-                    this.Monitor.Log(print.sourceRectForMenuView.Height.ToString());
-				}
-
-
-
 				blueprints.Add(CreateGreenhouse());
 			}
-			else
-			{
-				this.Monitor.Log(e.NewMenu.ToString());
-			}
+
 
 		}
 
 		private BluePrint CreateGreenhouse()
 		{
-
 				BluePrint AquaBP = new BluePrint("Aquaponics");
 				AquaBP.itemsRequired.Clear();
 
@@ -272,6 +292,13 @@ namespace Stardewponics
 				AquaBP.namesOfOkayBuildingLocations.Add("Farm");
 				AquaBP.magical = false;
 			return AquaBP;
+		}
+
+		/// <summary>Get all garages in the given location.</summary>
+		/// <param name="location">The location to search.</param>
+		private IEnumerable<Building> GetGreenhouses(BuildableGameLocation location)
+		{
+			return location.buildings.Where(building => building.buildingType == "Aquaponics");
 		}
 }
 }

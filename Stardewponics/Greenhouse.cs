@@ -67,10 +67,20 @@ namespace Stardewponics
             CarpenterMenu menu = Game1.activeClickableMenu as CarpenterMenu;
             float texScale = 2;
             int num1 = (menu.maxWidthOfBuildingViewer - (int)(texture.Width * texScale)) / 2;
-            num1 -= texture.Width / 4;
+            num1 -= (int)(texture.Width / 3.5);
             int num2 = (menu.maxHeightOfBuildingViewer - (int)(texture.Height * texScale)) / 2;
+            this.drawShadow(b, num1, num2);
             b.Draw(this.texture, new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + num1, Game1.activeClickableMenu.yPositionOnScreen + num2, (int)(texture.Width * texScale), (int)(texture.Height * texScale)), Color.White);
         }
+
+		public override void drawShadow(SpriteBatch b, int localX = -1, int localY = -1)
+		{
+			Vector2 position = localX == -1 ? Game1.GlobalToLocal(new Vector2((float)(this.tileX * Game1.tileSize), (float)((this.tileY + this.tilesHigh) * Game1.tileSize))) : new Vector2((float)localX, (float)(localY + this.getSourceRectForMenu().Height * Game1.pixelZoom));
+			b.Draw(Game1.mouseCursors, position, new Rectangle?(Building.leftShadow), Color.White * (localX == -1 ? this.alpha : 1f), 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1E-05f);
+			for (int index = 1; index < this.tilesWide - 1; ++index)
+				b.Draw(Game1.mouseCursors, position + new Vector2((float)(index * Game1.tileSize), 0.0f), new Rectangle?(Building.middleShadow), Color.White * (localX == -1 ? this.alpha : 1f), 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1E-05f);
+			b.Draw(Game1.mouseCursors, position + new Vector2((float)((this.tilesWide - 1) * Game1.tileSize), 0.0f), new Rectangle?(Building.rightShadow), Color.White * (localX == -1 ? this.alpha : 1f), 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1E-05f);
+		}
 
         public override void dayUpdate(int dayOfMonth)
         {

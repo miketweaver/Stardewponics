@@ -12,8 +12,9 @@ namespace Stardewponics
         *********/
         public string FarmerName { get; set; } = "";
         public ulong SaveSeed { get; set; }
-        public List<Vector2> GreenHouse = new List<Vector2>();
+        public List<Vector2> GreenHouseList = new List<Vector2>();
         public Save() { SaveSeed = ulong.MaxValue; }
+        public int daysOfConstructionLeft { get; set; }
 
 
         /*********
@@ -25,14 +26,16 @@ namespace Stardewponics
             FarmerName = nameInput;
         }
 
-        public Save AddTractorHouse(int inputX, int inputY)
+        public Save AddCustomBuilding(int inputX, int inputY)
         {
-            foreach (Vector2 THS in GreenHouse)
+            foreach (Vector2 THS in GreenHouseList)
             {
                 if (THS.X == inputX && THS.Y == inputY)
+                {
                     return this;
+                }
             }
-            GreenHouse.Add(new Vector2(inputX, inputY));
+            GreenHouseList.Add(new Vector2(inputX, inputY));
             return this;
         }
     }
