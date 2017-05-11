@@ -63,11 +63,10 @@ namespace Stardewponics
 
         private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
         {
-            Monitor.Log("Loc changed. ");
+
             // spawn tractor house & tractor
             if (this.IsNewDay && e.NewLocation == this.Farm)
             {
-                Monitor.Log("Pre load mod");
                 this.RestoreCustomData();
                 this.IsNewDay = false;
             }
@@ -82,8 +81,6 @@ namespace Stardewponics
         /// <summary>Stash all tractor and garage data to a separate file to avoid breaking the save file.</summary>
         private void StashCustomData()
         {
-            Monitor.Log("StashCustomData Start");
-
             // back up garages
             Building[] garages = this.GetGreenhouses(this.Farm).ToArray();
             CustomSaveData saveData = new CustomSaveData(garages);
@@ -94,8 +91,6 @@ namespace Stardewponics
                 this.Farm.destroyStructure(garage);
             //foreach (GameLocation location in Game1.locations)
             //	this.RemoveEveryCharactersOfType<Tractor>(location);
-
-            Monitor.Log("StashCustomData End");
         }
 
 
@@ -104,22 +99,14 @@ namespace Stardewponics
         {
             // get save data
             CustomSaveData saveData = this.Helper.ReadJsonFile<CustomSaveData>($"data/{Constants.SaveFolderName}.json");
-            Monitor.Log("build: " + saveData.Buildings[0].DaysOfConstructionLeft.ToString());
+
             if (saveData?.Buildings == null)
                 return;
 
-            Monitor.Log("build: " + saveData.Buildings[0].DaysOfConstructionLeft.ToString());
-
-            foreach (CustomSaveBuilding building in saveData.Buildings)
-            {
-                Monitor.Log("csb dayleft: " + building.DaysOfConstructionLeft.ToString());
-            }
             // add garages
             BluePrint blueprint = this.CreateGreenhouse();
             foreach (CustomSaveBuilding building in saveData.Buildings)
             {
-                Monitor.Log("X Y: " + building.Tile.X + " " + building.Tile.Y);
-                Monitor.Log("DayLeft: " + building.DaysOfConstructionLeft.ToString());
                 Building newGarage = new Greenhouse(blueprint, building.Tile)
                 {
                     buildingType = this.GarageBuildingType,
@@ -198,7 +185,6 @@ namespace Stardewponics
 
         private void TimeEvents_AfterDayStarted(object sender, EventArgs eventArgs)
         {
-            Monitor.Log("After Day started");
             this.IsNewDay = true;
             this.Farm = Game1.getFarm();
         }
@@ -214,7 +200,7 @@ namespace Stardewponics
 
             var currBuildingField = Helper.Reflection.GetPrivateField<Building>(carpenter, "currentBuilding");
             var currBuilding = currBuildingField.GetValue();
-            if (currBuilding is Building && currBuilding.buildingType == "Aquaponics")
+            if (currBuilding is Building && currBuilding.buildingType == this.GarageBuildingType)
             {
                 currBuildingField.SetValue(new Greenhouse(CreateGreenhouse(), new Vector2()));
             }
@@ -236,7 +222,7 @@ namespace Stardewponics
 
         private BluePrint CreateGreenhouse()
         {
-            BluePrint AquaBP = new BluePrint("Aquaponics");
+            BluePrint AquaBP = new BluePrint(GarageBuildingType);
             AquaBP.itemsRequired.Clear();
 
             string[] strArray2 = "390 200".Split(' ');
