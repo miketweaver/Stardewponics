@@ -10,27 +10,45 @@ namespace Stardewponics
 {
     public class Greenhouse : Building
     {
-        /*********
+		/*********
 		** Public methods
 		*********/
-        public Greenhouse(IContentHelper content) : base()
+
+        public Greenhouse(BluePrint blueprint, Vector2 tileLocation) : base()
         {
-            buildingType = "Fancy Greenhouse";
-            humanDoor = new Point(-1, -1);
-            animalDoor = new Point(-2, -1);
-            indoors = null;
-            nameOfIndoors = "";
-            baseNameOfIndoors = "";
-            nameOfIndoorsWithoutUnique = "";
-            magical = false;
-            tileX = 0;
-            tileY = 0;
-            maxOccupants = 0;
-            tilesWide = 14;
-            tilesHigh = 7;
-            this.texture = content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
-            daysOfConstructionLeft = 1;
-            leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
+            //buildingType = (int)
+            //humanDoor = new Point(-1, -1);
+            //animalDoor = new Point(-2, -1);
+            //indoors = null;
+            //nameOfIndoors = "";
+            //baseNameOfIndoors = "";
+            //nameOfIndoorsWithoutUnique = "";
+            //magical = false;
+            //tileX = 0;
+            //tileY = 0;
+            //maxOccupants = 0;
+            //tilesWide = 14;
+            //tilesHigh = 7;
+            //this.texture = content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
+            //daysOfConstructionLeft = 1;
+            //leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
+
+			this.tileX = (int)tileLocation.X;
+			this.tileY = (int)tileLocation.Y;
+			this.tilesWide = blueprint.tilesWidth;
+			this.tilesHigh = blueprint.tilesHeight;
+			this.buildingType = blueprint.name;
+			this.texture = blueprint.texture;
+			this.humanDoor = blueprint.humanDoor;
+			this.animalDoor = blueprint.animalDoor;
+			this.nameOfIndoors = blueprint.mapToWarpTo;
+			this.baseNameOfIndoors = this.nameOfIndoors;
+			this.nameOfIndoorsWithoutUnique = this.baseNameOfIndoors;
+			this.indoors = this.getIndoors();
+			this.nameOfIndoors = this.nameOfIndoors + (object)(this.tileX * 2000 + this.tileY);
+			this.maxOccupants = blueprint.maxOccupants;
+			this.daysOfConstructionLeft = 3;
+			this.magical = blueprint.magical;
         }
 
         public Greenhouse SetDaysOfConstructionLeft(int input)

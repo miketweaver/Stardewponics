@@ -25,9 +25,16 @@ namespace Stardewponics
 		/*********
 		** Properties
 		*********/
-		private Farm Farm = null;
+        /// <summary>The tractor garage's building type.</summary>
+        private readonly string GarageBuildingType = "Aquaponics";
+
+        /// <summary>The tractor's NPC name.</summary>
+        //private readonly string TractorName = "Tractor";
+
+		/// <summary>The current player's farm.</summary>
+		private Farm Farm;
+
 		private bool IsNewDay;
-		private SaveCollection AllSaves;
 
 		/*********
 		** Public methods
@@ -61,101 +68,67 @@ namespace Stardewponics
 			if (this.IsNewDay && e.NewLocation == this.Farm)
 			{
                 Monitor.Log("Pre load mod");
-				this.LoadModInfo();
+				this.RestoreCustomData();
 				this.IsNewDay = false;
 			}
 		}
 
 		private void SaveEvents_BeforeSave(object sender, EventArgs eventArgs)
 		{
-			// save mod data
-			this.SaveModInfo();
+			this.StashCustomData();
+		}
 
-			// remove tractor from save
-			foreach (Building aquabuilding in this.Farm.buildings.ToArray())
-				if (aquabuilding.buildingType == "Aquaponics")
-					this.Farm.destroyStructure(aquabuilding);
 
-			//Not needed as we'll be anly placing in the Farm?
+		/// <summary>Stash all tractor and garage data to a separate file to avoid breaking the save file.</summary>
+		private void StashCustomData()
+		{
+            Monitor.Log("StashCustomData Start");
+
+			// back up garages
+			Building[] garages = this.GetGreenhouses(this.Farm).ToArray();
+			CustomSaveData saveData = new CustomSaveData(garages);
+			this.Helper.WriteJsonFile($"data/{Constants.SaveFolderName}.json", saveData);
+
+			// remove tractors + buildings
+			foreach (Building garage in garages)
+				this.Farm.destroyStructure(garage);
 			//foreach (GameLocation location in Game1.locations)
-				
 			//	this.RemoveEveryCharactersOfType<Tractor>(location);
+
+            Monitor.Log("StashCustomData End");
 		}
 
 
-		//use to write AllSaves info to some .json file to store save
-		private void SaveModInfo()
+		/// <summary>Restore tractor and garage data removed by <see cref="StashCustomData"/>.</summary>
+		private void RestoreCustomData()
 		{
-            Monitor.Log("SaveModInfo Start");
-
-
-
-
-
-
-
-
-
-
-
-
-			if (AllSaves == null)
-				AllSaves = new SaveCollection().Add(new Save(Game1.player.name, Game1.uniqueIDForThisGame));
-            
-			Save currentSave = AllSaves.FindSave(Game1.player.name, Game1.uniqueIDForThisGame);
-
-            Monitor.Log("currentSave: " + currentSave.ToString());
-
-			if (currentSave.SaveSeed != ulong.MaxValue)
-			{
-                currentSave.GreenHouse.Clear();
-                foreach (Building building in this.GetGreenhouses(this.Farm))
-                {
-                    currentSave.AddCustomBuilding(building.tileX, building.tileY);
-                    Monitor.Log("X: " + building.tileX + " Y: " + building.tileY);
-                }
-			}
-			else
-			{
-				AllSaves.saves.Add(new Save(Game1.player.name, Game1.uniqueIDForThisGame));
-				SaveModInfo();
+			// get save data
+			CustomSaveData saveData = this.Helper.ReadJsonFile<CustomSaveData>($"data/{Constants.SaveFolderName}.json");
+            Monitor.Log("build: " + saveData.Buildings[0].DaysOfConstructionLeft.ToString());
+			if (saveData?.Buildings == null)
 				return;
-			}
-            Monitor.Log("All Saves: " + AllSaves);
-			this.Helper.WriteJsonFile("AquaponicsSave.json", AllSaves);
 
+            Monitor.Log("build: " + saveData.Buildings[0].DaysOfConstructionLeft.ToString());
 
-
-
-
-
-
-Monitor.Log("SaveModInfo End");
-
-
-
-
-
-		}
-
-
-		//use to load save info from some .json file to AllSaves
-		private void LoadModInfo()
-		{
-            Monitor.Log("load mod info");
-			this.AllSaves = this.Helper.ReadJsonFile<SaveCollection>("AquaponicsSave.json") ?? new SaveCollection();
-			Save saveInfo = this.AllSaves.FindSave(Game1.player.name, Game1.uniqueIDForThisGame);
-			if (saveInfo != null && saveInfo.SaveSeed != ulong.MaxValue)
+            foreach (CustomSaveBuilding building in saveData.Buildings)
+            {
+                Monitor.Log("csb dayleft: " + building.DaysOfConstructionLeft.ToString());
+            }
+			// add garages
+			BluePrint blueprint = this.CreateGreenhouse();
+			foreach (CustomSaveBuilding building in saveData.Buildings)
 			{
-                Monitor.Log("lmi 2");
-				foreach (Vector2 THS in saveInfo.GreenHouse)
-				{
-                    Monitor.Log("Greenhous - THS: " + THS.X + " " + THS.Y);
-					Building loadGreen = new Building(CreateGreenhouse(), THS);
-					loadGreen.daysOfConstructionLeft = 0;
-					this.Farm.buildStructure(loadGreen, THS, false, Game1.player);
-				}
-			} 
+                Monitor.Log("X Y: " + building.Tile.X + " " + building.Tile.Y);
+                Monitor.Log("DayLeft: " + building.DaysOfConstructionLeft.ToString());
+				Building newGarage = new Greenhouse(blueprint, building.Tile) { 
+                    buildingType = this.GarageBuildingType, 
+                    daysOfConstructionLeft = building.DaysOfConstructionLeft 
+                }; // rebuild to avoid data issues
+
+				this.Farm.buildStructure(newGarage, building.Tile, false, Game1.player);
+				//if (this.IsNewTractor)
+				//	this.SpawnTractor();
+			}
 		}
 
 
@@ -165,45 +138,45 @@ Monitor.Log("SaveModInfo End");
 			if (e.KeyPressed == Keys.OemCloseBrackets)
 			{
 
-				int start = 30;
-				int farmX = 25;
-				int farmY = 40;
-				this.Monitor.Log("Build Greenhouse key pressed. ]");
-				this.Farm.buildStructure(new Greenhouse(this.Helper.Content).SetDaysOfConstructionLeft(0), new Vector2(farmX, farmY), false, Game1.player);
+				//int start = 30;
+				//int farmX = 25;
+				//int farmY = 40;
+				//this.Monitor.Log("Build Greenhouse key pressed. ]");
+				//this.Farm.buildStructure(new Greenhouse(this.Helper.Content).SetDaysOfConstructionLeft(0), new Vector2(farmX, farmY), false, Game1.player);
 
 
 
-				GameLocation farmLocation = Game1.getLocationFromName("Farm");
+				//GameLocation farmLocation = Game1.getLocationFromName("Farm");
 
-				farmLocation.warps.Add(new Warp(farmX + 4, farmY + 4, "Greenhouse", start + 10, start + 23, false));
-				farmLocation.warps.Add(new Warp(farmX + 5, farmY + 4, "Greenhouse", start + 10, start + 23, false));
+				//farmLocation.warps.Add(new Warp(farmX + 4, farmY + 4, "Greenhouse", start + 10, start + 23, false));
+				//farmLocation.warps.Add(new Warp(farmX + 5, farmY + 4, "Greenhouse", start + 10, start + 23, false));
 
-				//Game1.locations[1].Name
+				////Game1.locations[1].Name
 
-				GameLocation greenhouseLocation = Game1.getLocationFromName("Greenhouse");
-				var tilesheet = greenhouseLocation.map.GetTileSheet("untitled tile sheet");
+				//GameLocation greenhouseLocation = Game1.getLocationFromName("Greenhouse");
+				//var tilesheet = greenhouseLocation.map.GetTileSheet("untitled tile sheet");
 
 
-				var aquaponics = this.Helper.Content.Load<Map>(@"assets\greenhousemap.xnb", ContentSource.ModFolder);
-				var layers = new[] { "Back", "Buildings", "Front" };
-				foreach (string lay in layers)
-				{
-				var aqualayer = aquaponics.GetLayer(lay);
-				var layer = greenhouseLocation.map.GetLayer(lay);
-				layer.LayerSize = new xTile.Dimensions.Size(230, 230);
+				//var aquaponics = this.Helper.Content.Load<Map>(@"assets\greenhousemap.xnb", ContentSource.ModFolder);
+				//var layers = new[] { "Back", "Buildings", "Front" };
+				//foreach (string lay in layers)
+				//{
+				//var aqualayer = aquaponics.GetLayer(lay);
+				//var layer = greenhouseLocation.map.GetLayer(lay);
+				//layer.LayerSize = new xTile.Dimensions.Size(230, 230);
 
-					for (int x = 0; x<aqualayer.LayerSize.Width; x++)
-					{
-						for (int y = 0; y<aqualayer.LayerSize.Height; y++)
-						{
-							var aquaTile = aqualayer.Tiles[x, y];
-							if (aquaTile != null)
-								layer.Tiles[start + x, start + y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, aquaTile.TileIndex);
-						}
-					}
-				}
+				//	for (int x = 0; x<aqualayer.LayerSize.Width; x++)
+				//	{
+				//		for (int y = 0; y<aqualayer.LayerSize.Height; y++)
+				//		{
+				//			var aquaTile = aqualayer.Tiles[x, y];
+				//			if (aquaTile != null)
+				//				layer.Tiles[start + x, start + y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, aquaTile.TileIndex);
+				//		}
+				//	}
+				//}
 
-				greenhouseLocation.warps.Add(new Warp(start + 10, start + 24, "Farm", farmX + 4, farmY + 7, false));
+				//greenhouseLocation.warps.Add(new Warp(start + 10, start + 24, "Farm", farmX + 4, farmY + 7, false));
 			}
 			if (e.KeyPressed == Keys.OemOpenBrackets)
 			{
@@ -242,7 +215,7 @@ Monitor.Log("SaveModInfo End");
             var currBuilding = currBuildingField.GetValue();
             if ( currBuilding is Building && currBuilding.buildingType == "Aquaponics" )
             {
-                currBuildingField.SetValue(new Greenhouse(Helper.Content));
+                currBuildingField.SetValue(new Greenhouse(CreateGreenhouse(),new Vector2()));
             }
         }
 
@@ -291,14 +264,15 @@ Monitor.Log("SaveModInfo End");
 				AquaBP.namesOfOkayBuildingLocations.Clear();
 				AquaBP.namesOfOkayBuildingLocations.Add("Farm");
 				AquaBP.magical = false;
-			return AquaBP;
+
+			    return AquaBP;
 		}
 
 		/// <summary>Get all garages in the given location.</summary>
 		/// <param name="location">The location to search.</param>
 		private IEnumerable<Building> GetGreenhouses(BuildableGameLocation location)
 		{
-			return location.buildings.Where(building => building.buildingType == "Aquaponics");
+            return location.buildings.Where(building => building.buildingType == this.GarageBuildingType);
 		}
 }
 }
